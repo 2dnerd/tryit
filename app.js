@@ -9,6 +9,15 @@ app.use(express.bodyParser());
 app.use(app.router);
 app.use(express.static(__dirname + "/public"));
 
+app.use(function(req,res){
+	res.send(404,"no page avail biyatch")
+});
+
+app.use(function(err,req,res,next){
+	res.status(err.status || 404);
+	res.send(err.message);
+});
+
 var users = [
 	{name:"prajwal"},
 	{name:"tejas"},
@@ -28,6 +37,9 @@ function authUser(req,res,next){
 
 	if(!authDone){
 		console.log("failed to authenticate");
+		var err = new Error("failed to authenticate");
+		err.status = 401;
+		next(err);
 	}
 
 	next();
